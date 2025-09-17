@@ -15,15 +15,19 @@ private static ArrayList<Produtos> produtos = new ArrayList<>();
 		return produto;
 	
 	}
-	public static void removerProduto(Produtos produto) {
-		produtos.remove(produto);
+	public static void removerProduto(int linhaSelecionada) {
+		produtos.remove(linhaSelecionada);
 	}
 
 	public static ArrayList<Produtos> getLista() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
+	public int getSelectedRow() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 	
 //	public static Produtos 
 

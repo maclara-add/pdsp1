@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import java.awt.Font;
 import javax.swing.JFormattedTextField;
@@ -23,7 +24,7 @@ public class TelaIdentificação extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JTextField textField;
+	private JTextField textNome;
 
 	/**
 	 * Launch the application.
@@ -70,16 +71,26 @@ public class TelaIdentificação extends JFrame {
 		lblCpf.setBounds(110, 232, 70, 25);
 		contentPane.add(lblCpf);
 		
-		JFormattedTextField formattedTextField = new JFormattedTextField();
-		formattedTextField.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		formattedTextField.setBounds(206, 233, 195, 32);
-		contentPane.add(formattedTextField);
-		
-		textField = new JTextField();
-		textField.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		textField.setBounds(206, 157, 195, 32);
-		contentPane.add(textField);
-		textField.setColumns(10);
+		MaskFormatter mascaraCPF = null;
+		try {
+		    mascaraCPF = new MaskFormatter("###.###.###-##"); // formato do CPF
+		    mascaraCPF.setPlaceholderCharacter('_'); // underline nos espaços vazios
+		} catch (ParseException e) {
+		    e.printStackTrace();
+		}
+
+		JFormattedTextField TextCPF = new JFormattedTextField(mascaraCPF);
+		TextCPF.setHorizontalAlignment(SwingConstants.CENTER);
+		TextCPF.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		TextCPF.setBounds(206, 233, 195, 32);
+		contentPane.add(TextCPF);
+			
+		textNome = new JTextField();
+		textNome.setHorizontalAlignment(SwingConstants.CENTER);
+		textNome.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		textNome.setBounds(206, 157, 195, 32);
+		contentPane.add(textNome);
+		textNome.setColumns(10);
 		
 		JRadioButton rdbtnAdministrador = new JRadioButton("Administrador");
 		rdbtnAdministrador.setFont(new Font("Tahoma", Font.PLAIN, 16));
@@ -107,11 +118,14 @@ public class TelaIdentificação extends JFrame {
 					TelaCompra compra = new TelaCompra();
 					compra.setVisible(true);
 					TelaIdentificação.this.setVisible(false);
+				} else if((textNome.getText().isEmpty()) || (TextCPF.getText().isEmpty()) || grupoUsuarios.getSelection() == null) {
+					 JOptionPane.showMessageDialog(null, "Preencha todos os campos", "Erro", JOptionPane.ERROR_MESSAGE);	
 				}
 			}
 		});
 		btnEntrar.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		btnEntrar.setBounds(247, 408, 106, 41);
 		contentPane.add(btnEntrar);
+		
 	}
 }

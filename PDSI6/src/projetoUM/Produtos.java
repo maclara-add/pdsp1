@@ -2,13 +2,13 @@ package projetoUM;
 
 public class Produtos {
 	
-	int id;
+	String id;
 	String nome;
 	String categoria;
-	float preco;
+	String preco;
 	
 	
-	public Produtos(int id, String nome, String categoria, float preco) {
+	public Produtos(String id, String nome, String categoria, String preco) {
 		super();
 		this.id = id;
 		this.nome = nome;
@@ -17,10 +17,10 @@ public class Produtos {
 	}
 	
 	
-	public int getId() {
+	public String getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 	public String getNome() {
@@ -35,15 +35,14 @@ public class Produtos {
 	public void setCategoria(String categoria) {
 		this.categoria = categoria;
 	}
-	public float getPreco() {
+	public String getPreco() {
 		return preco;
 	}
-	public void setPreco(float preco) {
+	public void setPreco(String preco) {
 		this.preco = preco;
 	}
 	
 	
-	
-	//oiiii
+
 
 }
