@@ -20,7 +20,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.text.MaskFormatter;
 import java.text.ParseException;
 
-public class TelaIdentificação extends JFrame {
+public class TelaIdentificacao extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -33,7 +33,7 @@ public class TelaIdentificação extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					TelaIdentificação frame = new TelaIdentificação();
+					TelaIdentificacao frame = new TelaIdentificacao();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -45,7 +45,7 @@ public class TelaIdentificação extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public TelaIdentificação() {
+	public TelaIdentificacao() {
 		setTitle("Tela de Identificação de Usuário");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 615, 510);
@@ -112,12 +112,12 @@ public class TelaIdentificação extends JFrame {
 				if(rdbtnAdministrador.isSelected()) {
 					CadastroProdutos cadastroproduto = new CadastroProdutos();
 					cadastroproduto.setVisible(true);
-					TelaIdentificação.this.setVisible(false);
+					TelaIdentificacao.this.setVisible(false);
 
 				} else if(rdbtnCliente.isSelected()) {
 					TelaCompra compra = new TelaCompra();
 					compra.setVisible(true);
-					TelaIdentificação.this.setVisible(false);
+					TelaIdentificacao.this.setVisible(false);
 				} else if((textNome.getText().isEmpty()) || (TextCPF.getText().isEmpty()) || grupoUsuarios.getSelection() == null) {
 					 JOptionPane.showMessageDialog(null, "Preencha todos os campos", "Erro", JOptionPane.ERROR_MESSAGE);	
 				}

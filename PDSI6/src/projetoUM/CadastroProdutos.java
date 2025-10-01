@@ -238,7 +238,7 @@ public class CadastroProdutos extends JFrame {
 		JMenu mnSair = new JMenu("Menu");
 		mnSair.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				TelaIdentificação identificacao = new TelaIdentificação();
+				TelaIdentificacao identificacao = new TelaIdentificacao();
 				identificacao.setVisible(true);
 				CadastroProdutos.this.setVisible(false);
 			}
@@ -248,7 +248,7 @@ public class CadastroProdutos extends JFrame {
 		JMenuItem mntmNewMenuItem = new JMenuItem("Voltar");
 		mntmNewMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				TelaIdentificação identificacao = new TelaIdentificação();
+				TelaIdentificacao identificacao = new TelaIdentificacao();
 				identificacao.setVisible(true);
 				CadastroProdutos.this.setVisible(false);
 			}
