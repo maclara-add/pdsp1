@@ -14,7 +14,6 @@ public class CarrinhoDeCompras {
 
     public void adicionarProduto(Produtos produto) {
         this.itens.add(produto);
-        // Tenta converter o preço de String para Double para somar
         try {
             this.total += Double.parseDouble(produto.getPreco());
         } catch (NumberFormatException e) {
@@ -26,7 +25,6 @@ public class CarrinhoDeCompras {
         for (int i = 0; i < itens.size(); i++) {
             Produtos p = itens.get(i);
             if (p.getId().equals(id)) {
-                // Tenta converter o preço para subtrair
                 try {
                     this.total -= Double.parseDouble(p.getPreco());
                 } catch (NumberFormatException e) {
@@ -34,7 +32,7 @@ public class CarrinhoDeCompras {
                 }
                 
                 itens.remove(i);
-                break; // Remove apenas o primeiro produto com esse ID
+                break;
             }
         }
     }

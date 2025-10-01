@@ -26,28 +26,23 @@ public class TelaCompra extends JFrame {
 	private JTable tabelaCarrinho;
 	private DefaultTableModel modeloCarrinho;
 	private JLabel labelTotal;
-	private JTextField textNomeCliente; // Para Nota Fiscal
-	private JTextField textCpfCliente;  // Para Nota Fiscal
+	private JTextField textNomeCliente; 
+	private JTextField textCpfCliente; 
 
-	// --- Lógica de Carrinho (SIMPLIFICADA) ---
-	private CarrinhoDeCompras carrinho; // Usaremos uma nova classe CarrinhoDeCompras
+	private CarrinhoDeCompras carrinho; 
 	
-	// Método de inicialização da TelaCompra
 	public TelaCompra() {
-		// Inicializa o carrinho
+	
 		this.carrinho = new CarrinhoDeCompras(); 
 		
 		setTitle("Supermercado - Tela de Compras");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 790, 559); // Aumentei o tamanho para caber o carrinho
+		setBounds(100, 100, 790, 559); 
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);  
 
-		// ------------------------------------------------------------------
-		// --- TABELA DE PRODUTOS DISPONÍVEIS ---
-		// ------------------------------------------------------------------
 		
 		JLabel lblDisponiveis = new JLabel("Produtos Disponíveis:");
 		lblDisponiveis.setBounds(53, 10, 200, 20);
@@ -56,7 +51,7 @@ public class TelaCompra extends JFrame {
 		
 		String[] colunas = {"Produto", "Preço", "Categoria", "ID"};
 		DefaultTableModel modeloTabela = new DefaultTableModel(colunas, 0) {
-		    // Torna a tabela não editável
+		    
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
@@ -65,17 +60,10 @@ public class TelaCompra extends JFrame {
 		tabelaProdutos = new JTable(modeloTabela);  
 
 		JScrollPane scrollPaneProdutos = new JScrollPane(tabelaProdutos);  
-		scrollPaneProdutos.setBounds(10, 35, 350, 250); // Ajustei o tamanho
+		scrollPaneProdutos.setBounds(10, 35, 350, 250);
 		contentPane.add(scrollPaneProdutos);
-		
-		// ------------------------------------------------------------------
-		// --- CARREGA OS DADOS DO LISTAPRODUTOS ---
-		// ------------------------------------------------------------------
+	
 		carregarProdutosNaTabela(modeloTabela);
-
-		// ------------------------------------------------------------------
-		// --- TABELA DO CARRINHO DE COMPRAS ---
-		// ------------------------------------------------------------------
 		
 		JLabel lblCarrinho = new JLabel("Seu Carrinho:");
 		lblCarrinho.setBounds(450, 10, 200, 20);
@@ -94,10 +82,6 @@ public class TelaCompra extends JFrame {
 		JScrollPane scrollPaneCarrinho = new JScrollPane(tabelaCarrinho);  
 		scrollPaneCarrinho.setBounds(392, 35, 350, 250); 
 		contentPane.add(scrollPaneCarrinho);
-		
-		// ------------------------------------------------------------------
-		// --- BOTÕES E TOTAL ---
-		// ------------------------------------------------------------------
 		
 		JButton btnAdicionar = new JButton("Adicionar ao Carrinho (->)");
 		btnAdicionar.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -119,7 +103,6 @@ public class TelaCompra extends JFrame {
 		});
 		contentPane.add(btnRemover);
 		
-		// JLabel para o Total
 		JLabel lblTotalEstatico = new JLabel("Total a Pagar:");
 		lblTotalEstatico.setBounds(477, 340, 126, 20);
 		lblTotalEstatico.setFont(new Font("Tahoma", Font.BOLD, 14));
@@ -130,7 +113,6 @@ public class TelaCompra extends JFrame {
 		labelTotal.setFont(new Font("Tahoma", Font.BOLD, 16));
 		contentPane.add(labelTotal);
 		
-		// Campos para Nota Fiscal
 		JLabel lblNome = new JLabel("Nome Cliente:");
 		lblNome.setBounds(53, 380, 100, 20);
 		contentPane.add(lblNome);
@@ -147,7 +129,6 @@ public class TelaCompra extends JFrame {
 		textCpfCliente.setBounds(150, 420, 253, 25);
 		contentPane.add(textCpfCliente);
 		
-		// Botão para Nota Fiscal
 		JButton btnNotaFiscal = new JButton("Emitir Nota Fiscal");
 		btnNotaFiscal.setBounds(487, 370, 200, 40);
 		btnNotaFiscal.setFont(new Font("Tahoma", Font.BOLD, 14));
@@ -169,12 +150,10 @@ public class TelaCompra extends JFrame {
 		contentPane.add(btnVoltar);
 	}
 	
-	// --- MÉTODOS DE LÓGICA ---
 	
 	private void carregarProdutosNaTabela(DefaultTableModel modelo) {
 		ArrayList<Produtos> lista = ListaProdutos.getLista();
 		
-		// Verifica se a lista não é nula e se tem itens
 		if (lista != null && !lista.isEmpty()) {
 			for (Produtos p : lista) {
 				modelo.addRow(new Object[] {
@@ -185,7 +164,6 @@ public class TelaCompra extends JFrame {
 				});
 			}
 		} else {
-			// Apenas para debug, pode ser removido
 			System.out.println("Lista de produtos vazia ou nula.");
 		}
 	}
@@ -194,7 +172,6 @@ public class TelaCompra extends JFrame {
 		int linhaSelecionada = tabelaProdutos.getSelectedRow();
 		
 		if (linhaSelecionada >= 0) {
-			// Pega os dados da linha selecionada
 			String nome = (String) tabelaProdutos.getValueAt(linhaSelecionada, 0);
 			String precoStr = (String) tabelaProdutos.getValueAt(linhaSelecionada, 1);
 			String id = (String) tabelaProdutos.getValueAt(linhaSelecionada, 3);
@@ -277,7 +254,7 @@ public class TelaCompra extends JFrame {
 	        nota.append(String.format("- %s [ID: %s] - R$ %s\n", 
 	            p.getNome(), 
 	            p.getId(), 
-	            p.getPreco())); // Note que getPreco retorna String
+	            p.getPreco()));
 	    }
 	    
 	    nota.append("-----------------------------------------------\n");
@@ -286,9 +263,8 @@ public class TelaCompra extends JFrame {
 	    
 	    JOptionPane.showMessageDialog(this, nota.toString(), "Nota Fiscal Emitida", JOptionPane.INFORMATION_MESSAGE);
 	    
-	    // Limpar carrinho e campos após a emissão
 	    carrinho.limparCarrinho();
-	    modeloCarrinho.setRowCount(0); // Limpa a JTable do carrinho
+	    modeloCarrinho.setRowCount(0);
 	    atualizarTotalCarrinho();
 	    textNomeCliente.setText("");
 	    textCpfCliente.setText("");

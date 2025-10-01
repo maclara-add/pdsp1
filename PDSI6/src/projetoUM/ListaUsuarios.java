@@ -3,27 +3,25 @@ package projetoUM;
 import java.util.ArrayList;
 
 public class ListaUsuarios {
-    
+
     private static ArrayList<Usuario> usuarios = new ArrayList<>();
 
     public static void adicionarUsuario(Usuario usuario) {
-        // futuro INSERT SQL
         usuarios.add(usuario);
-        System.out.println("LOG: Usuário cadastrado: " + usuario.getNome() + " (" + usuario.getFuncao() + ")");
     }
-
-    // metodo login
-    //  query SELECT SQL
-    public static Usuario buscarUsuarioParaLogin(String cpf, String email) {
+    
+    public static Usuario buscarUsuarioParaLogin(String nomeDigitado, String cpfLimpoDigitado) { 
         for (Usuario u : usuarios) {
-  
-            if (u.getCpf().equals(cpf) && u.getEmail().equals(email)) {
+            // p ir inedepente de ser maiusculo ou minusculo
+            if (u.getNome().trim().equalsIgnoreCase(nomeDigitado.trim()) && 
+                u.getCpf().equals(cpfLimpoDigitado)) {
+                
                 return u; 
             }
         }
-        return null;
+        return null; 
     }
-
+    
     public static ArrayList<Usuario> getLista() {
         return usuarios;
     }

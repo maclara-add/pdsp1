@@ -8,15 +8,15 @@ public class Produtos {
 	String preco;
 	
 	
-	public Produtos(String id, String nome, String categoria, String preco) {
+	public Produtos(String nome, String preco, String categoria, String id) {
 		super();
-		this.id = id;
-		this.nome = nome;
+		this.nome = nome;         
+		this.preco = preco;       
 		this.categoria = categoria;
-		this.preco = preco;
+		this.id = id;
 	}
 	
-	
+
 	public String getId() {
 		return id;
 	}
@@ -41,8 +41,4 @@ public class Produtos {
 	public void setPreco(String preco) {
 		this.preco = preco;
 	}
-	
-	
-
-
 }

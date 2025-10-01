@@ -25,9 +25,10 @@ public class TelaIdentificacao extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField textNome;
+    private JFormattedTextField TextCPF;
 
 	/**
-	 * Launch the application.
+	 *
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -61,30 +62,31 @@ public class TelaIdentificacao extends JFrame {
 		IbUsu.setBounds(160, 43, 263, 13);
 		contentPane.add(IbUsu);
 		
-		JLabel lblNome = new JLabel("Nome:");
+		JLabel lblNome = new JLabel("Nome:", SwingConstants.RIGHT);
 		lblNome.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		lblNome.setBounds(110, 156, 70, 25);
 		contentPane.add(lblNome);
 		
-		JLabel lblCpf = new JLabel("CPF:");
+		JLabel lblCpf = new JLabel("CPF:", SwingConstants.RIGHT);
 		lblCpf.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		lblCpf.setBounds(110, 232, 70, 25);
 		contentPane.add(lblCpf);
 		
 		MaskFormatter mascaraCPF = null;
 		try {
-		    mascaraCPF = new MaskFormatter("###.###.###-##"); // formato do CPF
-		    mascaraCPF.setPlaceholderCharacter('_'); // underline nos espaços vazios
+		    mascaraCPF = new MaskFormatter("###.###.###-##");
+		    mascaraCPF.setPlaceholderCharacter('_');
 		} catch (ParseException e) {
 		    e.printStackTrace();
 		}
 
-		JFormattedTextField TextCPF = new JFormattedTextField(mascaraCPF);
+		TextCPF = new JFormattedTextField(mascaraCPF);
 		TextCPF.setHorizontalAlignment(SwingConstants.CENTER);
 		TextCPF.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		TextCPF.setBounds(206, 233, 195, 32);
 		contentPane.add(TextCPF);
 			
+		// CAMPO TEXTO PARA O NOME
 		textNome = new JTextField();
 		textNome.setHorizontalAlignment(SwingConstants.CENTER);
 		textNome.setFont(new Font("Tahoma", Font.PLAIN, 17));
@@ -107,25 +109,68 @@ public class TelaIdentificacao extends JFrame {
 		grupoUsuarios.add(rdbtnCliente);
 		
 		JButton btnEntrar = new JButton("Entrar");
+		
 		btnEntrar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(rdbtnAdministrador.isSelected()) {
-					CadastroProdutos cadastroproduto = new CadastroProdutos();
-					cadastroproduto.setVisible(true);
-					TelaIdentificacao.this.setVisible(false);
-
-				} else if(rdbtnCliente.isSelected()) {
-					TelaCompra compra = new TelaCompra();
-					compra.setVisible(true);
-					TelaIdentificacao.this.setVisible(false);
-				} else if((textNome.getText().isEmpty()) || (TextCPF.getText().isEmpty()) || grupoUsuarios.getSelection() == null) {
-					 JOptionPane.showMessageDialog(null, "Preencha todos os campos", "Erro", JOptionPane.ERROR_MESSAGE);	
-				}
-			}
+		    public void actionPerformed(ActionEvent e) {
+		        
+		        String nome = textNome.getText().trim(); 
+		        
+		        String cpf = TextCPF.getText().replaceAll("[^0-9]", "").trim(); 
+		        String funcaoSelecionada = "";
+		        
+		        if(rdbtnAdministrador.isSelected()) {
+		            funcaoSelecionada = "Administrador";
+		        } else if(rdbtnCliente.isSelected()) {
+		            funcaoSelecionada = "Cliente";
+		        } 
+		        
+		        if(nome.isEmpty() || cpf.length() != 11 || grupoUsuarios.getSelection() == null) {
+		            JOptionPane.showMessageDialog(null, "Preencha o Nome, o CPF completo e selecione a função.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);	
+		            return;
+		        }
+		        
+		        Usuario usuario = ListaUsuarios.buscarUsuarioParaLogin(nome, cpf);
+		        
+		        if (usuario != null) {
+		            
+		            if (usuario.getFuncao().equals(funcaoSelecionada)) {
+		                
+		                JOptionPane.showMessageDialog(null, "Login efetuado com sucesso! Bem-vindo(a), " + usuario.getNome() + ".", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+		                
+		                if(usuario.getFuncao().equals("Administrador")) {
+		                    JFrame cadastroproduto = new CadastroProdutos();
+		                    cadastroproduto.setVisible(true);
+		                    TelaIdentificacao.this.dispose();
+		                } else if(usuario.getFuncao().equals("Cliente")) {
+		                    JFrame compra = new TelaCompra();
+		                    compra.setVisible(true);
+		                    TelaIdentificacao.this.dispose();
+		                }
+		                
+		            } else {
+		                JOptionPane.showMessageDialog(null, "Função incorreta selecionada. Você está cadastrado(a) como " + usuario.getFuncao() + ".", "Erro de Acesso", JOptionPane.WARNING_MESSAGE);
+		            }
+		            
+		        } else {
+		            JOptionPane.showMessageDialog(null, "Usuário não encontrado. Verifique seu Nome e CPF.", "Falha na Identificação", JOptionPane.ERROR_MESSAGE);
+		        }
+		    }
 		});
 		btnEntrar.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		btnEntrar.setBounds(247, 408, 106, 41);
+		btnEntrar.setBounds(160, 408, 106, 41);
 		contentPane.add(btnEntrar);
+		
+		JButton btnCadastrarse = new JButton("Cadastrar-se");
+		btnCadastrarse.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TelaCadastroUsuario cadastrousuario = new TelaCadastroUsuario();
+				cadastrousuario.setVisible(true);
+				TelaIdentificacao.this.dispose();
+			}
+		});
+		btnCadastrarse.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		btnCadastrarse.setBounds(287, 408, 163, 41);
+		contentPane.add(btnCadastrarse);
 		
 	}
 }
