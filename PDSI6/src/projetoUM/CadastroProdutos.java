@@ -64,12 +64,11 @@ public class CadastroProdutos extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);  
 
-		// colunas
+		
 		String[] colunas = {"Produto", "Preço", "Categoria", "ID"};  // uma coluna só para produtos
 		DefaultTableModel modeloTabela = new DefaultTableModel(colunas, 0);  //  tabela com 0 linhas
-		tabelaprodutos = new JTable(modeloTabela);  // Criando a JTable com o modelo de dados
+		tabelaprodutos = new JTable(modeloTabela);  
 
-		// Definindo o painel de rolagem para a tabela
 		JScrollPane scrollPane = new JScrollPane(tabelaprodutos);  
 		scrollPane.setBounds(53, 42, 506, 272);  
 
@@ -87,24 +86,41 @@ public class CadastroProdutos extends JFrame {
 				int linhaSelecionada = tabelaprodutos.getSelectedRow();
 				
 				if(linhaSelecionada >= 0) {
-					String nome = textNome2.getText();
-					String preco = textPreco2.getText();
-					String categoria = textCategoria2.getText();
-					String id = textID2.getText();
-					
-					modeloTabela.setValueAt(nome, linhaSelecionada, 0);
-					modeloTabela.setValueAt(preco, linhaSelecionada, 1);
-					modeloTabela.setValueAt(categoria, linhaSelecionada, 2);
-					modeloTabela.setValueAt(id, linhaSelecionada, 3);
-					
-					textNome2.setText("");
-					textPreco2.setText("");
-					textCategoria2.setText("");
-					textID2.setText("");
-					
+				    String idAntigo = (String) modeloTabela.getValueAt(linhaSelecionada, 3);
+				    
+				    String novoNome = textNome2.getText();
+				    String novoPreco = textPreco2.getText(); 
+				    String novaCategoria = textCategoria2.getText();
+				    String novoID = textID2.getText(); 
+				    
+				    if (novoNome.isEmpty() || novoPreco.isEmpty() || novaCategoria.isEmpty() || novoID.isEmpty()) {
+				        JOptionPane.showMessageDialog(null, "Preencha todos os campos para editar!", "Erro", JOptionPane.ERROR_MESSAGE);
+				        return;
+				    }
+
+				    ListaProdutos.editarProdutoPorId(
+				        idAntigo,      
+				        novoNome,
+				        novoPreco,
+				        novaCategoria,
+				        novoID        
+				    );
+
+				    modeloTabela.setValueAt(novoNome, linhaSelecionada, 0);       
+				    modeloTabela.setValueAt(novoPreco, linhaSelecionada, 1);     
+				    modeloTabela.setValueAt(novaCategoria, linhaSelecionada, 2); 
+				    modeloTabela.setValueAt(novoID, linhaSelecionada, 3);        
+
+				    JOptionPane.showMessageDialog(null, "Produto atualizado com sucesso!");
+				    
+				    textNome2.setText("");
+				    textPreco2.setText("");
+				    textCategoria2.setText("");
+				    textID2.setText("");
+				    
+				} else {
+				    JOptionPane.showMessageDialog(null, "Selecione um produto para editar!", "Aviso", JOptionPane.WARNING_MESSAGE);
 				}
-				
-				
 			}
 		});
 		btnEditar.setBounds(430, 52, 151, 27);
@@ -116,8 +132,7 @@ public class CadastroProdutos extends JFrame {
 		JButton btnAdicionar = new JButton("Adicionar produto");
 		btnAdicionar.setBounds(430, 7, 151, 27);
 		btnAdicionar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-//				DefaultTableModel model = (DefaultTableModel) produtos.getModel();
+			public void actionPerformed(ActionEvent e) {			
 				
 				String nome = textNome1.getText();
 				String preco = textPreco1.getText();
@@ -137,7 +152,6 @@ public class CadastroProdutos extends JFrame {
 				textCategoria1.setText("");
 				textID1.setText("");
 				
-				
 			}
 		});
 		btnAdicionar.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -146,19 +160,24 @@ public class CadastroProdutos extends JFrame {
 		JButton btnRemover = new JButton("Remover produto");
 		btnRemover.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-			int linhaSelecionada = produtos.getSelectedRow();
+			int linhaSelecionada = tabelaprodutos.getSelectedRow();
 			
-			if (linhaSelecionada >= 0) {
-			    // remove da tabela
-			    modeloTabela.removeRow(linhaSelecionada);
-
-			    // remove da lista
-			    ListaProdutos.removerProduto(linhaSelecionada);
-
-			    JOptionPane.showMessageDialog(null, "Produto removido com sucesso!");
+			if(linhaSelecionada>=0) {
+			// id
+			String id = (String) modeloTabela.getValueAt(linhaSelecionada, 3);
+			
+			modeloTabela.removeRow(linhaSelecionada);
+			
+			ListaProdutos.removerProdutoPorId(id);
+		
+			JOptionPane.showMessageDialog(null, "Produto removido com sucesso");
+			}else {
+				JOptionPane.showMessageDialog(null, "Selecione um produto para remover", "Erro", 
+						JOptionPane.ERROR_MESSAGE);
+				}
 			}
 			
-			}});
+			});
 			
 		btnRemover.setBounds(190, 91, 171, 27);
 		btnRemover.setFont(new Font("Tahoma", Font.PLAIN, 15));
