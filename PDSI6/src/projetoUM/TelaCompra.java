@@ -143,6 +143,9 @@ public class TelaCompra extends JFrame {
 		btnVoltar.setForeground(new Color(255, 0, 0));
 		btnVoltar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				TelaIdentificacao identificacao = new TelaIdentificacao();
+				identificacao.setVisible(true);
+				TelaCompra.this.setVisible(false);
 			}
 		});
 		btnVoltar.setFont(new Font("Tahoma", Font.BOLD, 14));

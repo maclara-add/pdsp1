@@ -110,7 +110,7 @@ public class TelaCadastroUsuario extends JFrame {
 		
 		JButton btnCadastrar = new JButton("Cadastrar-se");
 		btnCadastrar.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		btnCadastrar.setBounds(138, 434, 151, 29);
+		btnCadastrar.setBounds(81, 434, 151, 29);
 		
 		btnCadastrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -146,6 +146,18 @@ public class TelaCadastroUsuario extends JFrame {
 		textEmail.setColumns(10);
 		textEmail.setBounds(138, 268, 176, 29);
 		contentPane.add(textEmail);
+		
+		JButton btnVoltar = new JButton("Voltar");
+		btnVoltar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TelaIdentificacao identificacao = new TelaIdentificacao();
+				identificacao.setVisible(true);
+				TelaCadastroUsuario.this.setVisible(false);
+			}
+		});
+		btnVoltar.setFont(new Font("Tahoma", Font.PLAIN, 17));
+		btnVoltar.setBounds(242, 434, 151, 29);
+		contentPane.add(btnVoltar);
 		
 	}
 }
