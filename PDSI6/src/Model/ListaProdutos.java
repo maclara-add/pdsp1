@@ -20,13 +20,14 @@ public class ListaProdutos {
 		}
 	}
 	
-	public static void editarProdutoPorId(String idAntigo, String novoNome, String novoPreco, String novaCategoria, String novoId) {
+	public static void editarProdutoPorId(String idAntigo, String novoNome, String novoPreco, String novaCategoria, String novoId, int novoEstoque) {
 		for(Produtos p : produtos) {
 			if(p.getId().equals(idAntigo)) { 
 				p.setNome(novoNome);
 				p.setPreco(novoPreco);
 				p.setCategoria(novaCategoria);
 				p.setId(novoId); 
+				p.setEstoque(novoEstoque);
 				break;
 			}
 		}

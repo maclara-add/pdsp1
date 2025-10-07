@@ -11,6 +11,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.text.MaskFormatter;
 
 import Model.ListaUsuarios;
+import Model.Usuario;
 
 import javax.swing.JLabel;
 import java.awt.Font;

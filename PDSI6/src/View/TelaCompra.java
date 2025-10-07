@@ -17,6 +17,7 @@ import javax.swing.table.DefaultTableModel;
 
 import Model.CarrinhoDeCompras;
 import Model.ListaProdutos;
+import Model.Produtos;
 
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -186,7 +187,7 @@ public class TelaCompra extends JFrame {
 			try {
 				double preco = Double.parseDouble(precoStr);
 				
-				Produtos produtoParaCarrinho = new Produtos(nome, precoStr, "", id); // Categoria não é necessária no carrinho
+				Produtos produtoParaCarrinho = new Produtos(nome, precoStr, "", id, linhaSelecionada); // Categoria não é necessária no carrinho
 				carrinho.adicionarProduto(produtoParaCarrinho);
 				
 				// Atualiza o modelo da JTable do carrinho

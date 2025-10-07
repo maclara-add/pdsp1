@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.text.MaskFormatter;
 
 import Model.ListaUsuarios;
+import Model.Usuario;
 
 import java.text.ParseException;
 
