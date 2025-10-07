@@ -1,4 +1,4 @@
-package projetoUM;
+package View;
 
 import java.awt.EventQueue;
 
@@ -18,6 +18,9 @@ import javax.swing.ButtonGroup;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.text.MaskFormatter;
+
+import Model.ListaUsuarios;
+
 import java.text.ParseException;
 
 public class TelaIdentificacao extends JFrame {

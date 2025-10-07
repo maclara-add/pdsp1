@@ -1,4 +1,4 @@
-package projetoUM;
+package Model;
 
 public class Usuario {
     private String nome;

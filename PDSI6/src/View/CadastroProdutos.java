@@ -1,4 +1,4 @@
-package projetoUM;
+package View;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
@@ -8,6 +8,9 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
 import javax.swing.table.DefaultTableModel;
+
+import Model.ListaProdutos;
+import Model.Produtos;
 
 import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;

@@ -1,4 +1,4 @@
-package projetoUM;
+package View;
 
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -14,6 +14,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+
+import Model.CarrinhoDeCompras;
+import Model.ListaProdutos;
+
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import java.awt.Color;

@@ -1,4 +1,4 @@
-package projetoUM;
+package View;
 
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
@@ -9,6 +9,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.MaskFormatter;
+
+import Model.ListaUsuarios;
+
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.JComboBox;
