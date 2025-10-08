@@ -15,7 +15,10 @@ public class CarrinhoDeCompras {
     public void adicionarProduto(Produtos produto) {
         this.itens.add(produto);
         try {
-            this.total += Double.parseDouble(produto.getPreco());
+        	double precoUnitario = Double.parseDouble(produto.getPreco());
+        	int quantidadeComprada = produto.getEstoque();
+        	
+            this.total += (precoUnitario * quantidadeComprada);
         } catch (NumberFormatException e) {
             System.err.println("Erro ao somar preço do produto: " + produto.getNome() + ". Preço não é um número válido.");
         }
@@ -26,7 +29,11 @@ public class CarrinhoDeCompras {
             Produtos p = itens.get(i);
             if (p.getId().equals(id)) {
                 try {
-                    this.total -= Double.parseDouble(p.getPreco());
+                	Produtos produto = null;
+					double precoUnitario = Double.parseDouble(produto.getPreco());
+                	int quantidadeComprada = produto.getEstoque();
+                	
+                    this.total += (precoUnitario * quantidadeComprada);
                 } catch (NumberFormatException e) {
                     System.err.println("Erro ao subtrair preço do produto: " + p.getNome());
                 }

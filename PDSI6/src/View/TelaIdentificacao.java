@@ -16,9 +16,13 @@ import javax.swing.JRadioButton;
 import javax.swing.JButton;
 import javax.swing.ButtonGroup;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
 import java.awt.event.ActionEvent;
 import javax.swing.text.MaskFormatter;
 
+import Controller.UsuarioController;
+import DAO.Conexao;
+import DAO.UsuarioDAO;
 import Model.ListaUsuarios;
 import Model.Usuario;
 
@@ -30,6 +34,7 @@ public class TelaIdentificacao extends JFrame {
 	private JPanel contentPane;
 	private JTextField textNome;
     private JFormattedTextField TextCPF;
+    private UsuarioController usuarioController;
 
 	/**
 	 *
@@ -59,6 +64,14 @@ public class TelaIdentificacao extends JFrame {
 
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		
+		try {
+		    Connection conn = Conexao.getConnection();
+		    UsuarioDAO usuarioDAO = new UsuarioDAO(conn);
+		    usuarioController = new UsuarioController(usuarioDAO);
+		} catch (Exception e) {
+		    JOptionPane.showMessageDialog(null, "Erro ao conectar ao banco: " + e.getMessage());
+		}
 		
 		JLabel IbUsu = new JLabel("Bem vindo!");
 		IbUsu.setFont(new Font("Tahoma", Font.PLAIN, 16));
@@ -133,26 +146,28 @@ public class TelaIdentificacao extends JFrame {
 		            return;
 		        }
 		        
-		        Usuario usuario = ListaUsuarios.buscarUsuarioParaLogin(nome, cpf);
+		        boolean login = usuarioController.login(cpf, nome);
 		        
-		        if (usuario != null) {
+		        if (login) {
 		            
-		            if (usuario.getFuncao().equals(funcaoSelecionada)) {
-		                
+		            Usuario usuario = usuarioController.buscarUsuario(cpf);
+		            
+		            if (usuario != null && usuario.getFuncao().equals(funcaoSelecionada)) {
 		                JOptionPane.showMessageDialog(null, "Login efetuado com sucesso! Bem-vindo(a), " + usuario.getNome() + ".", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
 		                
 		                if(usuario.getFuncao().equals("Administrador")) {
 		                    JFrame cadastroproduto = new CadastroProdutos();
 		                    cadastroproduto.setVisible(true);
-		                    TelaIdentificacao.this.dispose();
 		                } else if(usuario.getFuncao().equals("Cliente")) {
 		                    JFrame compra = new TelaCompra();
 		                    compra.setVisible(true);
-		                    TelaIdentificacao.this.dispose();
 		                }
+		                TelaIdentificacao.this.dispose();
 		                
-		            } else {
+		            } else if (usuario != null) {
 		                JOptionPane.showMessageDialog(null, "Função incorreta selecionada. Você está cadastrado(a) como " + usuario.getFuncao() + ".", "Erro de Acesso", JOptionPane.WARNING_MESSAGE);
+		            } else {
+		                 JOptionPane.showMessageDialog(null, "Usuário não encontrado. Verifique seu Nome e CPF.", "Falha na Identificação", JOptionPane.ERROR_MESSAGE);
 		            }
 		            
 		        } else {

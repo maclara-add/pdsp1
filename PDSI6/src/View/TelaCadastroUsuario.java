@@ -3,6 +3,7 @@ package View;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
 import java.text.ParseException;
 
 import javax.swing.JFrame;
@@ -10,6 +11,9 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.MaskFormatter;
 
+import Controller.UsuarioController;
+import DAO.Conexao;
+import DAO.UsuarioDAO;
 import Model.ListaUsuarios;
 import Model.Usuario;
 
@@ -30,6 +34,7 @@ public class TelaCadastroUsuario extends JFrame {
 	private JTextField textNome;
     private JComboBox<String> comboBoxFuncao;
     private JTextField textEmail;
+    private UsuarioController usuarioController;
     
     private JFormattedTextField textCPF; 
 
@@ -61,6 +66,14 @@ public class TelaCadastroUsuario extends JFrame {
 
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		
+		try {
+		    Connection conn = Conexao.getConnection();
+		    UsuarioDAO usuarioDAO = new UsuarioDAO(conn);
+		    usuarioController = new UsuarioController(usuarioDAO);
+		} catch (Exception e) {
+		    JOptionPane.showMessageDialog(null, "Erro ao conectar ao banco: " + e.getMessage());
+		}
 
 		JLabel lbCadastro = new JLabel("Cadastre-se!", SwingConstants.CENTER);
 		lbCadastro.setFont(new Font("Tahoma", Font.PLAIN, 16));
@@ -131,9 +144,8 @@ public class TelaCadastroUsuario extends JFrame {
 					JOptionPane.showMessageDialog(null, "Preencha o Nome, Email e o CPF completo!", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-				// limpar cpf
-				Usuario novoUsuario = new Usuario(nome, cpfLimpo, email, funcao);
-				ListaUsuarios.adicionarUsuario(novoUsuario);
+				// conectndo no banco
+				usuarioController.adicionarUsuario(cpfLimpo, nome, email, funcao);
 				
 				JOptionPane.showMessageDialog(null, "Usuário '" + nome + "' cadastrado com sucesso! Faça seu login.", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
 				
