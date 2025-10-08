@@ -32,6 +32,20 @@ public class ListaProdutos {
 			}
 		}
 	}
+	
+	public static Produtos buscarPorId(String id) {
+	    for (Produtos p : produtos) {
+	        if (p.getId().equals(id)) return p;
+	    }
+	    return null;
+	}
+
+	public static Produtos buscarPorNome(String nome) {
+	    for (Produtos p : produtos) {
+	        if (p.getNome().equalsIgnoreCase(nome)) return p;
+	    }
+	    return null;
+	}
 
 	public static ArrayList<Produtos> getLista() {
 		return produtos;
