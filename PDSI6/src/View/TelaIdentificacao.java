@@ -23,7 +23,6 @@ import javax.swing.text.MaskFormatter;
 import Controller.UsuarioController;
 import DAO.Conexao;
 import DAO.UsuarioDAO;
-import Model.ListaUsuarios;
 import Model.Usuario;
 
 import java.text.ParseException;

@@ -44,7 +44,6 @@ public class UsuarioDAO {
         return lista;
     }
 
-    // Buscar usuário por CPF
     public Usuario buscarPorCpf(String cpf) throws SQLException {
         String sql = "SELECT * FROM usuarios WHERE cpf = ?";
         PreparedStatement ps = conn.prepareStatement(sql);
@@ -72,7 +71,6 @@ public class UsuarioDAO {
         ps.close();
     }
 
-    // Atualizar usuário
     public void atualizarUsuario(Usuario u) throws SQLException {
         String sql = "UPDATE usuarios SET nome = ?, email = ?, funcao = ? WHERE cpf = ?";
         PreparedStatement ps = conn.prepareStatement(sql);

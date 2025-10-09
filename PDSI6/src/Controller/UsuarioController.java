@@ -34,10 +34,8 @@ public class UsuarioController {
             Usuario usuario = usuarioDAO.buscarPorCpf(cpf);
 
             if (usuario != null && usuario.getNome().equalsIgnoreCase(nome)) {
-                JOptionPane.showMessageDialog(null, "Bem-vindo, " + usuario.getNome() + "!");
                 return true;
             } else {
-                JOptionPane.showMessageDialog(null, "Usuário não encontrado ou nome incorreto!");
                 return false;
             }
         } catch (Exception e) {
