@@ -1,13 +1,13 @@
 package View;
 
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import net.miginfocom.swing.MigLayout;
 
 import Controller.ProdutoController;
 import Model.CarrinhoDeCompras;
@@ -22,40 +22,44 @@ public class TelaCompra extends JFrame {
     private DefaultTableModel modeloProdutos;
     private DefaultTableModel modeloCarrinho;
     private JLabel labelTotal;
-    private JTextField textNomeCliente; 
-    private JTextField textCpfCliente; 
+    private JTextField textNomeCliente;
+    private JTextField textCpfCliente;
     private CarrinhoDeCompras carrinho;
 
     public TelaCompra() {
         carrinho = new CarrinhoDeCompras();
         setTitle("Supermercado - Tela de Compras");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 850, 560);
+        setSize(900, 600);
+        setMinimumSize(new Dimension(800, 550));
+        setLocationRelativeTo(null);
+
         contentPane = new JPanel();
-        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
         setContentPane(contentPane);
-        contentPane.setLayout(null);
 
+        // MigLayout: Duas colunas iguais [grow, fill]
+        contentPane.setLayout(new MigLayout("fill, insets 10", "[grow,fill]10[grow,fill]", "[]10[grow,fill]10[][]10[][]10[][][]"));
+
+        // R0: Labels das Tabelas
         JLabel lblDisponiveis = new JLabel("Produtos Disponíveis:");
-        lblDisponiveis.setBounds(53, 10, 200, 20);
         lblDisponiveis.setFont(new Font("Tahoma", Font.BOLD, 14));
-        contentPane.add(lblDisponiveis);
+        contentPane.add(lblDisponiveis, "cell 0 0, align left");
 
+        JLabel lblCarrinho = new JLabel("Seu Carrinho:");
+        lblCarrinho.setFont(new Font("Tahoma", Font.BOLD, 14));
+        contentPane.add(lblCarrinho, "cell 1 0,alignx left");
+
+        // R1: Tabelas (Responsivas: grow/push)
         String[] colunas = {"Produto", "Preço", "Categoria", "ID", "Estoque"};
         modeloProdutos = new DefaultTableModel(colunas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) { return false; }
         };
         tabelaProdutos = new JTable(modeloProdutos);
-        JScrollPane scrollPaneProdutos = new JScrollPane(tabelaProdutos);
-        scrollPaneProdutos.setBounds(10, 35, 400, 250);
-        contentPane.add(scrollPaneProdutos);
         carregarProdutosNaTabela();
-
-        JLabel lblCarrinho = new JLabel("Seu Carrinho:");
-        lblCarrinho.setBounds(430, 10, 200, 20);
-        lblCarrinho.setFont(new Font("Tahoma", Font.BOLD, 14));
-        contentPane.add(lblCarrinho);
+        JScrollPane scrollProdutos = new JScrollPane(tabelaProdutos);
+        contentPane.add(scrollProdutos, "cell 0 1, grow, push, w 100%, h 100%");
 
         String[] colunasCarrinho = {"Produto", "Preço", "Quantidade", "Subtotal", "ID"};
         modeloCarrinho = new DefaultTableModel(colunasCarrinho, 0) {
@@ -63,67 +67,69 @@ public class TelaCompra extends JFrame {
             public boolean isCellEditable(int row, int column) { return false; }
         };
         tabelaCarrinho = new JTable(modeloCarrinho);
-        JScrollPane scrollPaneCarrinho = new JScrollPane(tabelaCarrinho);
-        scrollPaneCarrinho.setBounds(430, 35, 380, 250);
-        contentPane.add(scrollPaneCarrinho);
+        JScrollPane scrollCarrinho = new JScrollPane(tabelaCarrinho);
+        contentPane.add(scrollCarrinho, "cell 1 1,push,width 100%,height 100%,grow");
 
+        // R2: Botões de Ação
         JButton btnAdicionar = new JButton("Adicionar ao Carrinho (->)");
         btnAdicionar.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        btnAdicionar.setBounds(10, 300, 400, 30);
         btnAdicionar.addActionListener(e -> adicionarAoCarrinho());
-        contentPane.add(btnAdicionar);
+        contentPane.add(btnAdicionar, "cell 0 2, growx");
 
         JButton btnRemover = new JButton("Remover do Carrinho (<-)");
         btnRemover.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        btnRemover.setBounds(430, 300, 380, 30);
         btnRemover.addActionListener(e -> removerDoCarrinho());
-        contentPane.add(btnRemover);
+        contentPane.add(btnRemover, "cell 1 2,growx");
 
+        // R3: Total a Pagar (Sub-painel)
         JLabel lblTotalEstatico = new JLabel("Total a Pagar:");
-        lblTotalEstatico.setBounds(477, 340, 126, 20);
         lblTotalEstatico.setFont(new Font("Tahoma", Font.BOLD, 14));
-        contentPane.add(lblTotalEstatico);
-
         labelTotal = new JLabel("R$ 0.00");
-        labelTotal.setBounds(590, 340, 120, 20);
         labelTotal.setFont(new Font("Tahoma", Font.BOLD, 16));
-        contentPane.add(labelTotal);
+        
+        JPanel panelTotal = new JPanel(new MigLayout("fill, insets 0", "[grow, fill][right]", "[]"));
+        panelTotal.add(lblTotalEstatico, "align left");
+        panelTotal.add(labelTotal, "align right");
+        
+        contentPane.add(new JPanel(), "cell 0 3");
+        contentPane.add(panelTotal, "cell 1 3,growx");
 
+        // R4: Nome Cliente Label
         JLabel lblNome = new JLabel("Nome Cliente:");
-        lblNome.setBounds(53, 380, 100, 20);
-        contentPane.add(lblNome);
-
-        textNomeCliente = new JTextField();
-        textNomeCliente.setBounds(150, 380, 253, 25);
-        contentPane.add(textNomeCliente);
-
-        JLabel lblCpf = new JLabel("CPF Cliente:");
-        lblCpf.setBounds(53, 420, 100, 20);
-        contentPane.add(lblCpf);
-
-        textCpfCliente = new JTextField();
-        textCpfCliente.setBounds(150, 420, 253, 25);
-        contentPane.add(textCpfCliente);
+        contentPane.add(lblNome, "cell 0 4, align left");
 
         JButton btnNotaFiscal = new JButton("Emitir Nota Fiscal");
-        btnNotaFiscal.setBounds(487, 370, 200, 40);
-        btnNotaFiscal.setFont(new Font("Tahoma", Font.BOLD, 14));
+        btnNotaFiscal.setFont(new Font("Tahoma", Font.BOLD, 16));
         btnNotaFiscal.addActionListener(e -> emitirNotaFiscal());
-        contentPane.add(btnNotaFiscal);
+        
+        // R5: Nome Cliente Text Field e Botão Nota Fiscal
+        textNomeCliente = new JTextField();
+        textNomeCliente.setFont(new Font("Tahoma", Font.PLAIN, 16));
+        contentPane.add(textNomeCliente, "cell 0 5,growx,aligny center");
+        contentPane.add(btnNotaFiscal, "cell 1 5,growx");
+
+        // R6: CPF Cliente Label e Botão Sair
+        JLabel lblCpf = new JLabel("CPF Cliente:");
+        contentPane.add(lblCpf, "cell 0 6, align left");
 
         JButton btnVoltar = new JButton("Sair");
         btnVoltar.setForeground(new java.awt.Color(255, 0, 0));
+        btnVoltar.setFont(new Font("Tahoma", Font.BOLD, 16));
         btnVoltar.addActionListener(e -> {
             TelaIdentificacao identificacao = new TelaIdentificacao();
             identificacao.setVisible(true);
             TelaCompra.this.setVisible(false);
         });
-        btnVoltar.setFont(new Font("Tahoma", Font.BOLD, 14));
-        btnVoltar.setBounds(487, 432, 200, 40);
-        contentPane.add(btnVoltar);
+        contentPane.add(btnVoltar, "cell 1 6,growx");
+
+        // R7: CPF Cliente Text Field
+        textCpfCliente = new JTextField();
+        textCpfCliente.setFont(new Font("Tahoma", Font.PLAIN, 16));
+        contentPane.add(textCpfCliente, "cell 0 7,growx,aligny center");
     }
 
     private void carregarProdutosNaTabela() {
+        // ... (Lógica de carregamento inalterada)
         modeloProdutos.setRowCount(0);
         ArrayList<Produtos> lista = ProdutoController.listarProdutos();
         if (lista != null) {
@@ -146,40 +152,69 @@ public class TelaCompra extends JFrame {
             return;
         }
 
-        String nome = modeloProdutos.getValueAt(linhaSelecionada, 0).toString();
-        String precoStr = modeloProdutos.getValueAt(linhaSelecionada, 1).toString().replace(",", ".");
-        String id = modeloProdutos.getValueAt(linhaSelecionada, 3).toString();
-        int estoque = Integer.parseInt(modeloProdutos.getValueAt(linhaSelecionada, 4).toString());
-
-        String qtdStr = JOptionPane.showInputDialog(this, "Quantidade desejada:");
-        if (qtdStr == null) return;
-        int qtdDesejada;
+        // Lógica de Extração e Conversão, protegida por try-catch
         try {
-            qtdDesejada = Integer.parseInt(qtdStr);
-            if (qtdDesejada <= 0) { JOptionPane.showMessageDialog(this, "Quantidade inválida."); return; }
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Digite um número válido."); return;
+            // Extraindo dados da tabela
+            String nome = modeloProdutos.getValueAt(linhaSelecionada, 0).toString();
+            // Substitui ',' por '.' para garantir o parse correto para double
+            String precoStr = modeloProdutos.getValueAt(linhaSelecionada, 1).toString().replace(",", ".");
+            String id = modeloProdutos.getValueAt(linhaSelecionada, 3).toString();
+            // Note: Integer.parseInt() é um ponto de exceção potencial (NumberFormatException)
+            int estoque = Integer.parseInt(modeloProdutos.getValueAt(linhaSelecionada, 4).toString());
+
+            // Solicitação de Quantidade e Tratamento de Exceção (Input)
+            String qtdStr = JOptionPane.showInputDialog(this, "Quantidade desejada:");
+            if (qtdStr == null) return; // Usuário cancelou
+            
+            int qtdDesejada;
+            try {
+                // Tenta converter o input. NumberFormatException é esperado aqui se o usuário digitar letras.
+                qtdDesejada = Integer.parseInt(qtdStr);
+                if (qtdDesejada <= 0) {
+                    JOptionPane.showMessageDialog(this, "A quantidade deve ser maior que zero.", "Erro de Quantidade", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            } catch (NumberFormatException ex) {
+                // Captura a exceção de conversão de texto para número
+                JOptionPane.showMessageDialog(this, "Valor inválido. Digite apenas números inteiros para a quantidade.", "Erro de Conversão", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Validação de Estoque (Lógica de Negócio)
+            if (qtdDesejada > estoque) {
+                JOptionPane.showMessageDialog(this, "Estoque insuficiente! Estoque atual: " + estoque, "Aviso de Estoque", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            
+            // Lógica de atualização de estoque e carrinho
+            Produtos produto = ProdutoController.buscarProduto(id);
+            if (produto != null) {
+                produto.setEstoque(produto.getEstoque() - qtdDesejada);
+                ProdutoController.editarProduto(id, produto);
+            }
+
+            carregarProdutosNaTabela();
+
+            // Conversão de Preço e Cálculo de Subtotal
+            double precoDouble = Double.parseDouble(precoStr); // Ponto de exceção potencial (NumberFormatException)
+            double subtotal = precoDouble * qtdDesejada;
+
+            // Adiciona ao modelo do carrinho (usando vírgula para exibição)
+            modeloCarrinho.addRow(new Object[]{nome, precoStr.replace(".", ","), qtdDesejada, subtotal, id});
+            carrinho.adicionarProduto(new Produtos(nome, precoStr.replace(".", ","), "", id, qtdDesejada));
+
+            atualizarTotalCarrinho();
+            JOptionPane.showMessageDialog(this, "Produto '" + nome + "' adicionado ao carrinho!");
+            
+        } catch (NumberFormatException e) {
+            // Captura NumberFormatException na extração de estoque ou preço (se o seu Controller/Model estiver inconsistente)
+            JOptionPane.showMessageDialog(this, "Erro interno de formato de dados (preço ou estoque inválido).", "Erro Interno", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace(); // Imprime para debug, mas avisa o usuário de forma amigável
+        } catch (Exception e) {
+            // Captura qualquer outra exceção inesperada
+            JOptionPane.showMessageDialog(this, "Ocorreu um erro inesperado ao adicionar o produto.", "Erro Desconhecido", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
-
-        if (qtdDesejada > estoque) {
-            JOptionPane.showMessageDialog(this, "Estoque insuficiente! Estoque atual: " + estoque); return;
-        }
-
-        Produtos produto = ProdutoController.buscarProduto(id);
-        if (produto != null) {
-            produto.setEstoque(produto.getEstoque() - qtdDesejada);
-            ProdutoController.editarProduto(id, produto);
-        }
-
-        carregarProdutosNaTabela();
-
-        double precoDouble = Double.parseDouble(precoStr);
-        double subtotal = precoDouble * qtdDesejada;
-        modeloCarrinho.addRow(new Object[]{nome, precoStr.replace(".", ","), qtdDesejada, subtotal, id});
-        carrinho.adicionarProduto(new Produtos(nome, precoStr.replace(".", ","), "", id, qtdDesejada));
-
-        atualizarTotalCarrinho();
-        JOptionPane.showMessageDialog(this, "Produto '" + nome + "' adicionado ao carrinho!");
     }
 
     private void removerDoCarrinho() {
@@ -189,31 +224,51 @@ public class TelaCompra extends JFrame {
             return;
         }
 
-        String id = modeloCarrinho.getValueAt(linhaSelecionada, 4).toString();
-        int qtd = Integer.parseInt(modeloCarrinho.getValueAt(linhaSelecionada, 2).toString());
+        try {
+            // Conversão de ID e Quantidade (ponto potencial de NumberFormatException)
+            String id = modeloCarrinho.getValueAt(linhaSelecionada, 4).toString();
+            int qtd = Integer.parseInt(modeloCarrinho.getValueAt(linhaSelecionada, 2).toString());
 
-        Produtos p = ProdutoController.buscarProduto(id);
-        if (p != null) {
-            p.setEstoque(p.getEstoque() + qtd);
-            ProdutoController.editarProduto(id, p);
+            // Lógica de Devolução ao Estoque
+            Produtos p = ProdutoController.buscarProduto(id);
+            if (p != null) {
+                p.setEstoque(p.getEstoque() + qtd);
+                ProdutoController.editarProduto(id, p);
+            }
+
+            // Remoção do carrinho e atualização da UI
+            carrinho.removerProdutoPorId(id);
+            modeloCarrinho.removeRow(linhaSelecionada);
+            carregarProdutosNaTabela();
+            atualizarTotalCarrinho();
+            JOptionPane.showMessageDialog(this, "Produto removido do carrinho e devolvido ao estoque.");
+            
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Erro interno de formato ao ler quantidade ou ID do carrinho.", "Erro Interno", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Ocorreu um erro inesperado ao remover o produto.", "Erro Desconhecido", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
-
-        carrinho.removerProdutoPorId(id);
-        modeloCarrinho.removeRow(linhaSelecionada);
-        carregarProdutosNaTabela();
-        atualizarTotalCarrinho();
-        JOptionPane.showMessageDialog(this, "Produto removido do carrinho e devolvido ao estoque.");
     }
 
     private void atualizarTotalCarrinho() {
         double total = 0;
         for (int i = 0; i < modeloCarrinho.getRowCount(); i++) {
-            total += Double.parseDouble(modeloCarrinho.getValueAt(i, 3).toString());
+            try {
+                // Tenta converter o subtotal para double. Se o dado estiver corrompido, captura o erro.
+                total += Double.parseDouble(modeloCarrinho.getValueAt(i, 3).toString());
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Erro ao calcular o total. Subtotal inválido na linha " + (i + 1) + ".", "Erro de Cálculo", JOptionPane.ERROR_MESSAGE);
+                System.err.println("Erro ao calcular o subtotal na linha " + i + ": " + e.getMessage());
+                // Poderia ser um throw aqui, mas para manter o sistema rodando, apenas logamos o erro.
+            }
         }
         labelTotal.setText(String.format("R$ %.2f", total));
     }
 
     private void emitirNotaFiscal() {
+        // ... (Lógica de Nota Fiscal inalterada, as validações de input já estavam corretas)
         if (carrinho.getItens().isEmpty()) {
             JOptionPane.showMessageDialog(this, "O carrinho está vazio. Adicione produtos antes de emitir a nota.", "Aviso", JOptionPane.WARNING_MESSAGE);
             return;
@@ -226,6 +281,7 @@ public class TelaCompra extends JFrame {
             return;
         }
 
+        // Lógica de geração da nota...
         StringBuilder nota = new StringBuilder();
         nota.append("================ NOTA FISCAL ==================\n");
         nota.append("Cliente: ").append(nome).append("\n");

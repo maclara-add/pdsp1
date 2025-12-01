@@ -1,35 +1,301 @@
 package View;
 
+import java.awt.Dimension;
 import java.awt.EventQueue;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTable;
-import javax.swing.JScrollPane;
+import java.util.ArrayList;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import net.miginfocom.swing.MigLayout;
+
 import Controller.ProdutoController;
 import Model.Produtos;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JButton;
 import java.awt.Font;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.JLabel;
-import java.util.ArrayList;
 
 public class CadastroProdutos extends JFrame {
 
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
     private JTable tabelaprodutos;
-    private JTextField textNome1, textNome2, textPreco1, textCategoria1, textID1;
-    private JTextField textPreco2, textCategoria2, textID2, textEstoque, textEstoque2;
+    private JTextField textNome1, textPreco1, textCategoria1, textID1, textEstoque1;
+    private JTextField textNome2, textPreco2, textCategoria2, textID2, textEstoque2;
     private DefaultTableModel modeloTabela;
+
+    public CadastroProdutos() {
+        setTitle("Administrador - Cadastros");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(850, 600);
+        setMinimumSize(new Dimension(750, 550));
+        setLocationRelativeTo(null);
+
+        contentPane = new JPanel();
+        contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+        setContentPane(contentPane);
+
+        // MigLayout do ContentPane: Menu, Tabela, Ações (OK, Grow Vertical e Horizontal)
+        contentPane.setLayout(new MigLayout(
+                "fill, insets 10",
+                "[grow, fill]",
+                "[]10[grow, fill][]"
+        ));
+
+        // -------------------- MENU BAR --------------------
+        JMenuBar menuBar = new JMenuBar();
+        JMenu mnMenu = new JMenu("Menu");
+        JMenuItem mntmVoltar = new JMenuItem("Voltar");
+        mntmVoltar.addActionListener(e -> {
+            // Assumindo que TelaIdentificacao existe e lida com o controle de fluxo.
+            TelaIdentificacao identificacao = new TelaIdentificacao(); 
+            identificacao.setVisible(true);
+            CadastroProdutos.this.dispose();
+        });
+        mnMenu.add(mntmVoltar);
+        menuBar.add(mnMenu);
+        setJMenuBar(menuBar);
+
+        // -------------------- TABELA DE PRODUTOS --------------------
+        String[] colunas = { "Produto", "Preço", "Categoria", "ID", "Estoque" };
+        modeloTabela = new DefaultTableModel(colunas, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        tabelaprodutos = new JTable(modeloTabela);
+        carregarProdutosNaTabela();
+
+        JScrollPane scrollPane = new JScrollPane(tabelaprodutos);
+        // Ocupa a célula 0 1 e tem GROW/PUSH para preencher o espaço vertical
+        contentPane.add(scrollPane, "cell 0 1, grow, push");
+
+        // -------------------- PAINEL DE AÇÕES (AJUSTADO PARA RESPONSIVIDADE) --------------------
+        JPanel panel = new JPanel();
+        panel.setLayout(new MigLayout(
+                "fill, insets 5, wrap 6", // 6 colunas, quebra de linha (wrap) a cada 6
+                // 5 Colunas [grow, fill] para os campos de texto + 1 Coluna [150, fill] para os botões
+                "[grow, fill][grow, fill][grow, fill][grow, fill][grow, fill]10[150, fill]",
+                "[]5[]5[]5[]"
+        ));
+        contentPane.add(panel, "cell 0 2, growx");
+
+        // ---- Labels (Linha 0) ----
+        String[] labels = { "Nome", "Preço", "Categoria", "ID", "Estoque" };
+        for (int i = 0; i < labels.length; i++) {
+            JLabel lbl = new JLabel(labels[i]);
+            lbl.setFont(new Font("Tahoma", Font.BOLD, 14));
+            panel.add(lbl, "cell " + i + " 0, align center");
+        }
+
+        // -------------------- CAMPOS ADICIONAR (Linha 1) --------------------
+        textNome1 = new JTextField();
+        panel.add(textNome1, "cell 0 1, h 30");
+        textPreco1 = new JTextField();
+        panel.add(textPreco1, "cell 1 1, h 30");
+        textCategoria1 = new JTextField();
+        panel.add(textCategoria1, "cell 2 1, h 30");
+        textID1 = new JTextField();
+        panel.add(textID1, "cell 3 1, h 30");
+        textEstoque1 = new JTextField();
+        panel.add(textEstoque1, "cell 4 1, h 30");
+
+        JButton btnAdicionar = new JButton("Adicionar Produto");
+        btnAdicionar.setFont(new Font("Tahoma", Font.BOLD, 14));
+        btnAdicionar.addActionListener(e -> adicionarProduto());
+        panel.add(btnAdicionar, "cell 5 1, growx, h 30");
+
+        // -------------------- CAMPOS EDITAR (Linha 2) --------------------
+        textNome2 = new JTextField();
+        panel.add(textNome2, "cell 0 2, h 30");
+        textPreco2 = new JTextField();
+        panel.add(textPreco2, "cell 1 2, h 30");
+        textCategoria2 = new JTextField();
+        panel.add(textCategoria2, "cell 2 2, h 30");
+        textID2 = new JTextField();
+        panel.add(textID2, "cell 3 2, h 30");
+        textEstoque2 = new JTextField();
+        panel.add(textEstoque2, "cell 4 2, h 30");
+
+        JButton btnEditar = new JButton("Editar Produto");
+        btnEditar.setFont(new Font("Tahoma", Font.BOLD, 14));
+        btnEditar.addActionListener(e -> editarProduto());
+        panel.add(btnEditar, "cell 5 2, growx, h 30");
+
+        // -------------------- BOTÃO REMOVER (Linha 3) --------------------
+        JButton btnRemover = new JButton("Remover Produto Selecionado");
+        btnRemover.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        btnRemover.addActionListener(e -> removerProduto());
+        // Ocupa 6 colunas (span 6)
+        panel.add(btnRemover, "cell 0 3 6 1, growx, align center");
+
+        // -------------------- LISTENER PARA PREENCHER CAMPOS DE EDIÇÃO --------------------
+        tabelaprodutos.getSelectionModel().addListSelectionListener(e -> {
+            int linha = tabelaprodutos.getSelectedRow();
+            if (linha >= 0 && !e.getValueIsAdjusting()) {
+                textNome2.setText((String) modeloTabela.getValueAt(linha, 0));
+                // O preço e a ID são String, o estoque é int/Integer
+                textPreco2.setText((String) modeloTabela.getValueAt(linha, 1)); 
+                textCategoria2.setText((String) modeloTabela.getValueAt(linha, 2));
+                textID2.setText((String) modeloTabela.getValueAt(linha, 3));
+                // Convertendo para String, garantindo que o valor seja exibido.
+                textEstoque2.setText(String.valueOf(modeloTabela.getValueAt(linha, 4))); 
+            }
+        });
+    }
+
+    // -------------------- CARREGAR TABELA (Com Tratamento de Exceção) --------------------
+    private void carregarProdutosNaTabela() {
+        modeloTabela.setRowCount(0);
+        try {
+            ArrayList<Produtos> lista = ProdutoController.listarProdutos(); // Ponto de I/O, pode falhar!
+            if (lista != null) {
+                for (Produtos p : lista) {
+                    modeloTabela.addRow(new Object[] { p.getNome(), p.getPreco(), p.getCategoria(), p.getId(),
+                            p.getEstoque() });
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Erro ao carregar produtos. Verifique o acesso ao arquivo/banco de dados.",
+                    "Erro de Dados", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+    // -------------------- ADICIONAR (Com Tratamento de Exceção) --------------------
+    private void adicionarProduto() {
+        String nome = textNome1.getText().trim();
+        String preco = textPreco1.getText().trim();
+        String categoria = textCategoria1.getText().trim();
+        String id = textID1.getText().trim();
+        String estoqueStr = textEstoque1.getText().trim();
+
+        if (nome.isEmpty() || preco.isEmpty() || categoria.isEmpty() || id.isEmpty() || estoqueStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Preencha todos os campos para adicionar!", "Erro",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            // Validação de formato (NumberFormatException)
+            int estoque = Integer.parseInt(estoqueStr);
+            // Simulação de validação de preço (se for String, o Controller/Model fará a conversão final)
+            // Se o preço não for um número válido, o try-catch genérico abaixo deverá capturar.
+            // Para maior robustez, você pode adicionar: 
+            // Double.parseDouble(preco.replace(",", ".")); 
+
+            if (estoque < 0) {
+                JOptionPane.showMessageDialog(this, "O estoque não pode ser negativo!", "Erro de Negócio",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            Produtos p = new Produtos(nome, preco, categoria, id, estoque);
+            ProdutoController.adicionarProduto(p); // Ponto de exceção potencial (I/O, dados)
+
+            // Atualiza a tabela e limpa campos
+            carregarProdutosNaTabela();
+            JOptionPane.showMessageDialog(this, "Produto adicionado com sucesso!", "Sucesso",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+            textNome1.setText("");
+            textPreco1.setText("");
+            textCategoria1.setText("");
+            textID1.setText("");
+            textEstoque1.setText("");
+
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Erro de formato! Verifique se o ESTOQUE é inteiro e o PREÇO é numérico.", "Erro de Formato",
+                    JOptionPane.ERROR_MESSAGE);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Erro ao adicionar produto: " + ex.getMessage(), "Erro Geral",
+                    JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    }
+
+    // -------------------- EDITAR (Com Tratamento de Exceção) --------------------
+    private void editarProduto() {
+        int linha = tabelaprodutos.getSelectedRow();
+        if (linha < 0) {
+            JOptionPane.showMessageDialog(this, "Selecione um produto para editar!", "Aviso",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String novoNome = textNome2.getText().trim();
+        String novoPreco = textPreco2.getText().trim();
+        String novaCategoria = textCategoria2.getText().trim();
+        String novoID = textID2.getText().trim();
+        String novoEstoqueStr = textEstoque2.getText().trim();
+
+        if (novoNome.isEmpty() || novoPreco.isEmpty() || novaCategoria.isEmpty() || novoID.isEmpty()
+                || novoEstoqueStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Preencha todos os campos de edição!", "Erro",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            // Validação de formato (NumberFormatException)
+            int novoEstoque = Integer.parseInt(novoEstoqueStr);
+            // Simulação de validação de preço
+            // Double.parseDouble(novoPreco.replace(",", ".")); 
+            
+            if (novoEstoque < 0) {
+                JOptionPane.showMessageDialog(this, "O estoque não pode ser negativo!", "Erro de Negócio",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            String idAntigo = (String) modeloTabela.getValueAt(linha, 3);
+            Produtos novoProduto = new Produtos(novoNome, novoPreco, novaCategoria, novoID, novoEstoque);
+            ProdutoController.editarProduto(idAntigo, novoProduto); // Ponto de exceção potencial (I/O, dados)
+
+            // Atualiza a linha na JTable
+            modeloTabela.setValueAt(novoNome, linha, 0);
+            modeloTabela.setValueAt(novoPreco, linha, 1);
+            modeloTabela.setValueAt(novaCategoria, linha, 2);
+            modeloTabela.setValueAt(novoID, linha, 3);
+            modeloTabela.setValueAt(novoEstoque, linha, 4);
+
+            JOptionPane.showMessageDialog(this, "Produto atualizado com sucesso!", "Sucesso",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Erro de formato! Verifique se o ESTOQUE é inteiro e o PREÇO é numérico.", "Erro de Formato",
+                    JOptionPane.ERROR_MESSAGE);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Erro ao editar produto: " + ex.getMessage(), "Erro Geral",
+                    JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    }
+
+    // -------------------- REMOVER (Com Tratamento de Exceção) --------------------
+    private void removerProduto() {
+        int linha = tabelaprodutos.getSelectedRow();
+        if (linha < 0) {
+            JOptionPane.showMessageDialog(this, "Selecione um produto para remover!", "Aviso",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try {
+            String id = (String) modeloTabela.getValueAt(linha, 3);
+            int confirm = JOptionPane.showConfirmDialog(this, "Remover o produto ID: " + id + "?", "Confirmação",
+                    JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                ProdutoController.removerProduto(id); // Ponto de exceção potencial (I/O, dados)
+                modeloTabela.removeRow(linha);
+                JOptionPane.showMessageDialog(this, "Produto removido com sucesso!", "Sucesso",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Erro ao remover produto!", "Erro Geral", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    }
 
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
@@ -40,225 +306,5 @@ public class CadastroProdutos extends JFrame {
                 e.printStackTrace();
             }
         });
-    }
-
-    public CadastroProdutos() {
-        setTitle("Administrador - Cadastros");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 756, 558);
-        contentPane = new JPanel();
-        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-        setContentPane(contentPane);
-        contentPane.setLayout(null);
-
-        String[] colunas = {"Produto", "Preço", "Categoria", "ID", "Estoque"};
-        modeloTabela = new DefaultTableModel(colunas, 0);
-        tabelaprodutos = new JTable(modeloTabela);
-        JScrollPane scrollPane = new JScrollPane(tabelaprodutos);
-        scrollPane.setBounds(113, 42, 506, 272);
-        contentPane.add(scrollPane);
-
-        carregarProdutosNaTabela();
-
-        JPanel panel = new JPanel();
-        panel.setBounds(10, 335, 722, 165);
-        contentPane.add(panel);
-        panel.setLayout(null);
-
-        JButton btnEditar = new JButton("Editar produto");
-        btnEditar.addActionListener(e -> {
-            int linhaSelecionada = tabelaprodutos.getSelectedRow();
-            if (linhaSelecionada >= 0) {
-                String idAntigo = (String) modeloTabela.getValueAt(linhaSelecionada, 3);
-                String novoNome = textNome2.getText();
-                String novoPreco = textPreco2.getText();
-                String novaCategoria = textCategoria2.getText();
-                String novoID = textID2.getText();
-                String novoEstoqueStr = textEstoque2.getText();
-                if (novoNome.isEmpty() || novoPreco.isEmpty() || novaCategoria.isEmpty() || novoID.isEmpty() || novoEstoqueStr.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Preencha todos os campos para editar!", "Erro", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                int novoEstoque;
-                try {
-                    novoEstoque = Integer.parseInt(novoEstoqueStr);
-                } catch (NumberFormatException o) {
-                    JOptionPane.showMessageDialog(null, "Digite um valor numérico para o estoque!", "Erro", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                Produtos novoProduto = new Produtos(novoNome, novoPreco, novaCategoria, novoID, novoEstoque);
-                ProdutoController.editarProduto(idAntigo, novoProduto);
-                modeloTabela.setValueAt(novoNome, linhaSelecionada, 0);
-                modeloTabela.setValueAt(novoPreco, linhaSelecionada, 1);
-                modeloTabela.setValueAt(novaCategoria, linhaSelecionada, 2);
-                modeloTabela.setValueAt(novoID, linhaSelecionada, 3);
-                modeloTabela.setValueAt(novoEstoque, linhaSelecionada, 4);
-                JOptionPane.showMessageDialog(null, "Produto atualizado com sucesso!");
-                textNome2.setText("");
-                textPreco2.setText("");
-                textCategoria2.setText("");
-                textID2.setText("");
-                textEstoque2.setText("");
-            } else {
-                JOptionPane.showMessageDialog(null, "Selecione um produto para editar!", "Aviso", JOptionPane.WARNING_MESSAGE);
-            }
-        });
-        btnEditar.setBounds(561, 68, 151, 27);
-        btnEditar.setFont(new Font("Tahoma", Font.PLAIN, 15));
-        panel.add(btnEditar);
-
-        JButton btnAdicionar = new JButton("Adicionar produto");
-        btnAdicionar.setBounds(561, 31, 151, 27);
-        btnAdicionar.addActionListener(e -> {
-            String nome = textNome1.getText();
-            String preco = textPreco1.getText();
-            String categoria = textCategoria1.getText();
-            String id = textID1.getText();
-            String estoqueStr = textEstoque.getText();
-            int estoque;
-            try {
-                estoque = Integer.parseInt(estoqueStr);
-            } catch (NumberFormatException o) {
-                JOptionPane.showMessageDialog(null, "Digite um valor numérico para o estoque!", "Erro", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            Produtos p = new Produtos(nome, preco, categoria, id, estoque);
-            ProdutoController.adicionarProduto(p);
-            modeloTabela.addRow(new Object[]{nome, preco, categoria, id, estoque});
-            textNome1.setText("");
-            textPreco1.setText("");
-            textCategoria1.setText("");
-            textID1.setText("");
-            textEstoque.setText("");
-        });
-        btnAdicionar.setFont(new Font("Tahoma", Font.PLAIN, 15));
-        panel.add(btnAdicionar);
-
-        JButton btnRemover = new JButton("Remover produto");
-        btnRemover.addActionListener(e -> {
-            int linhaSelecionada = tabelaprodutos.getSelectedRow();
-            if (linhaSelecionada >= 0) {
-                String id = (String) modeloTabela.getValueAt(linhaSelecionada, 3);
-                ProdutoController.removerProduto(id);
-                modeloTabela.removeRow(linhaSelecionada);
-                JOptionPane.showMessageDialog(null, "Produto removido com sucesso");
-            } else {
-                JOptionPane.showMessageDialog(null, "Selecione um produto para remover", "Erro", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-        btnRemover.setBounds(273, 116, 171, 27);
-        btnRemover.setFont(new Font("Tahoma", Font.PLAIN, 15));
-        panel.add(btnRemover);
-
-        textNome1 = new JTextField();
-        textNome1.setHorizontalAlignment(SwingConstants.CENTER);
-        textNome1.setBounds(10, 31, 96, 27);
-        panel.add(textNome1);
-
-        textNome2 = new JTextField();
-        textNome2.setHorizontalAlignment(SwingConstants.CENTER);
-        textNome2.setBounds(10, 68, 96, 27);
-        panel.add(textNome2);
-
-        textPreco1 = new JTextField();
-        textPreco1.setHorizontalAlignment(SwingConstants.CENTER);
-        textPreco1.setBounds(116, 31, 96, 27);
-        panel.add(textPreco1);
-
-        textCategoria1 = new JTextField();
-        textCategoria1.setHorizontalAlignment(SwingConstants.CENTER);
-        textCategoria1.setBounds(222, 31, 96, 27);
-        panel.add(textCategoria1);
-
-        textID1 = new JTextField();
-        textID1.setHorizontalAlignment(SwingConstants.CENTER);
-        textID1.setBounds(328, 31, 96, 27);
-        panel.add(textID1);
-
-        textPreco2 = new JTextField();
-        textPreco2.setHorizontalAlignment(SwingConstants.CENTER);
-        textPreco2.setBounds(116, 68, 96, 27);
-        panel.add(textPreco2);
-
-        textCategoria2 = new JTextField();
-        textCategoria2.setHorizontalAlignment(SwingConstants.CENTER);
-        textCategoria2.setBounds(222, 68, 96, 27);
-        panel.add(textCategoria2);
-
-        textID2 = new JTextField();
-        textID2.setHorizontalAlignment(SwingConstants.CENTER);
-        textID2.setBounds(328, 68, 96, 27);
-        panel.add(textID2);
-
-        textEstoque = new JTextField();
-        textEstoque.setHorizontalAlignment(SwingConstants.CENTER);
-        textEstoque.setBounds(434, 31, 96, 27);
-        panel.add(textEstoque);
-
-        textEstoque2 = new JTextField();
-        textEstoque2.setHorizontalAlignment(SwingConstants.CENTER);
-        textEstoque2.setBounds(434, 68, 96, 27);
-        panel.add(textEstoque2);
-
-        JLabel lblNome = new JLabel("Nome");
-        lblNome.setHorizontalAlignment(SwingConstants.CENTER);
-        lblNome.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        lblNome.setBounds(34, 10, 45, 13);
-        panel.add(lblNome);
-
-        JLabel lblPreco = new JLabel("Preço");
-        lblPreco.setHorizontalAlignment(SwingConstants.CENTER);
-        lblPreco.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        lblPreco.setBounds(138, 12, 45, 13);
-        panel.add(lblPreco);
-
-        JLabel lblCategoria = new JLabel("Categoria");
-        lblCategoria.setHorizontalAlignment(SwingConstants.CENTER);
-        lblCategoria.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        lblCategoria.setBounds(236, 12, 64, 13);
-        panel.add(lblCategoria);
-
-        JLabel lblId = new JLabel("ID");
-        lblId.setHorizontalAlignment(SwingConstants.CENTER);
-        lblId.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        lblId.setBounds(342, 12, 64, 13);
-        panel.add(lblId);
-
-        JLabel lblEstoque = new JLabel("Estoque");
-        lblEstoque.setHorizontalAlignment(SwingConstants.CENTER);
-        lblEstoque.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        lblEstoque.setBounds(447, 12, 64, 13);
-        panel.add(lblEstoque);
-
-        JMenuBar menuBar = new JMenuBar();
-        menuBar.setBounds(0, 0, 101, 22);
-        contentPane.add(menuBar);
-
-        JMenu mnSair = new JMenu("Menu");
-        menuBar.add(mnSair);
-
-        JMenuItem mntmVoltar = new JMenuItem("Voltar");
-        mntmVoltar.addActionListener(e -> {
-            TelaIdentificacao identificacao = new TelaIdentificacao();
-            identificacao.setVisible(true);
-            CadastroProdutos.this.setVisible(false);
-        });
-        mnSair.add(mntmVoltar);
-    }
-
-    private void carregarProdutosNaTabela() {
-        modeloTabela.setRowCount(0);
-        ArrayList<Produtos> lista = ProdutoController.listarProdutos();
-        if (lista != null && !lista.isEmpty()) {
-            for (Produtos p : lista) {
-                modeloTabela.addRow(new Object[]{
-                    p.getNome(),
-                    p.getPreco(),
-                    p.getCategoria(),
-                    p.getId(),
-                    p.getEstoque()
-                });
-            }
-        }
     }
 }
