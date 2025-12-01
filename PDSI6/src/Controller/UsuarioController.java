@@ -13,6 +13,7 @@ public class UsuarioController {
         this.usuarioDAO = usuarioDAO;
     }
 
+  //tratamento de exceção
     public void adicionarUsuario(String cpf, String nome, String email, String funcao) {
         try {
             if (usuarioDAO.buscarPorCpf(cpf) != null) {
@@ -28,7 +29,7 @@ public class UsuarioController {
         }
     }
     
-    //login
+    //login //tratamento de exceção
     public boolean login(String cpf, String nome) {
         try {
             Usuario usuario = usuarioDAO.buscarPorCpf(cpf);
@@ -45,7 +46,7 @@ public class UsuarioController {
         }
     }
 
-
+  //tratamento de exceção
     public Usuario buscarUsuario(String cpf) {
         try {
             return usuarioDAO.buscarPorCpf(cpf);

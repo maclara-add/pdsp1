@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 public class ProdutoController {
 
+	//tratamento de exceção
     public static boolean adicionarProduto(Produtos p) {
         try (Connection conn = Conexao.getConnection()) {
             ProdutoDAO dao = new ProdutoDAO(conn);
@@ -18,7 +19,7 @@ public class ProdutoController {
             return false;
         }
     }
-
+  //tratamento de exceção
     public static Produtos buscarProduto(String id) {
         try (Connection conn = Conexao.getConnection()) {
             ProdutoDAO dao = new ProdutoDAO(conn);
@@ -28,7 +29,7 @@ public class ProdutoController {
             return null;
         }
     }
-
+  //tratamento de exceção
     public static ArrayList<Produtos> listarProdutos() {
         ArrayList<Produtos> lista = new ArrayList<>();
         try (Connection conn = Conexao.getConnection()) {
@@ -53,6 +54,7 @@ public class ProdutoController {
         }
         return lista;
     }
+  //tratamento de exceção
 
     public static boolean editarProduto(String idAntigo, Produtos novoProduto) {
         try (Connection conn = Conexao.getConnection()) {
@@ -73,7 +75,7 @@ public class ProdutoController {
             return false;
         }
     }
-
+  //tratamento de exceção
     public static boolean removerProduto(String id) {
         try (Connection conn = Conexao.getConnection()) {
             String sql = "DELETE FROM produtos WHERE id = ?";
