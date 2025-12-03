@@ -1,6 +1,5 @@
-package DAO;
+package Model;
 
-import Model.Produtos;
 import java.sql.*;
 
 public class ProdutoDAO {

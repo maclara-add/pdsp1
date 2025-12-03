@@ -22,9 +22,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.text.MaskFormatter;
 
 import Controller.UsuarioController;
-import DAO.Conexao;
-import DAO.UsuarioDAO;
+import Model.Conexao;
 import Model.Usuario;
+import Model.UsuarioDAO;
 import net.miginfocom.swing.MigLayout;
 
 public class TelaIdentificacao extends JFrame {
@@ -60,14 +60,12 @@ public class TelaIdentificacao extends JFrame {
         contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
         setContentPane(contentPane);
 
-        // MigLayout: Layout responsivo centralizado
         contentPane.setLayout(new MigLayout(
                 "fill, insets 20",
                 "[grow, fill]",
                 "[]20[]10[]10[]10[]20[]10[]20[]"
         ));
 
-        // -------------------- CONEXÃO COM BANCO (Com Tratamento de Exceção) --------------------
         try {
             Connection conn = Conexao.getConnection();
             UsuarioDAO usuarioDAO = new UsuarioDAO(conn);
@@ -79,12 +77,10 @@ public class TelaIdentificacao extends JFrame {
             e.printStackTrace();
         }
 
-        // -------------------- TÍTULO --------------------
         JLabel lblBemVindo = new JLabel("Bem vindo!", SwingConstants.CENTER);
         lblBemVindo.setFont(new Font("Tahoma", Font.BOLD, 20));
         contentPane.add(lblBemVindo, "cell 0 0, align center");
 
-        // -------------------- NOME --------------------
         JLabel lblNome = new JLabel("Nome:", SwingConstants.CENTER);
         lblNome.setFont(new Font("Tahoma", Font.PLAIN, 18));
         contentPane.add(lblNome, "cell 0 1, align center");
@@ -94,7 +90,6 @@ public class TelaIdentificacao extends JFrame {
         textNome.setFont(new Font("Tahoma", Font.PLAIN, 14));
         contentPane.add(textNome, "cell 0 2, growx, h 35");
 
-        // -------------------- CPF (Com Tratamento de Exceção na Máscara) --------------------
         JLabel lblCpf = new JLabel("CPF:", SwingConstants.CENTER);
         lblCpf.setFont(new Font("Tahoma", Font.PLAIN, 18));
         contentPane.add(lblCpf, "cell 0 3, align center");
@@ -115,7 +110,6 @@ public class TelaIdentificacao extends JFrame {
         textCPF.setFont(new Font("Tahoma", Font.PLAIN, 14));
         contentPane.add(textCPF, "cell 0 4, growx, h 35");
 
-        // -------------------- FUNÇÃO (RADIO BUTTONS) --------------------
         JLabel lblFuncao = new JLabel("Selecione sua função:", SwingConstants.CENTER);
         lblFuncao.setFont(new Font("Tahoma", Font.PLAIN, 18));
         contentPane.add(lblFuncao, "cell 0 5, align center");
@@ -129,10 +123,12 @@ public class TelaIdentificacao extends JFrame {
         contentPane.add(panelRadio, "cell 0 6, growx");
 
         rdbtnAdministrador = new JRadioButton("Administrador");
+        rdbtnAdministrador.setHorizontalAlignment(SwingConstants.CENTER);
         rdbtnAdministrador.setFont(new Font("Tahoma", Font.PLAIN, 16));
         panelRadio.add(rdbtnAdministrador, "cell 0 0, align center");
 
         rdbtnCliente = new JRadioButton("Cliente");
+        rdbtnCliente.setHorizontalAlignment(SwingConstants.CENTER);
         rdbtnCliente.setFont(new Font("Tahoma", Font.PLAIN, 16));
         panelRadio.add(rdbtnCliente, "cell 1 0, align center");
 
@@ -140,7 +136,6 @@ public class TelaIdentificacao extends JFrame {
         grupoUsuarios.add(rdbtnAdministrador);
         grupoUsuarios.add(rdbtnCliente);
 
-        // -------------------- PAINEL DE BOTÕES --------------------
         JPanel panelBotoes = new JPanel();
         panelBotoes.setLayout(new MigLayout(
                 "fill, insets 0",
@@ -168,7 +163,6 @@ public class TelaIdentificacao extends JFrame {
         panelBotoes.add(btnCadastrarse, "cell 1 0, h 45");
     }
 
-    // -------------------- REALIZAR LOGIN (Com Tratamento de Exceção) --------------------
     private void realizarLogin() {
         try {
             String nome = textNome.getText().trim();
@@ -181,7 +175,6 @@ public class TelaIdentificacao extends JFrame {
                 funcaoSelecionada = "Cliente";
             }
 
-            // Validações de campos vazios
             if (nome.isEmpty()) {
                 JOptionPane.showMessageDialog(this,
                         "O campo Nome não pode estar vazio!",
@@ -203,7 +196,6 @@ public class TelaIdentificacao extends JFrame {
                 return;
             }
 
-            // Realizar login (pode lançar exceção de banco de dados)
             boolean login = usuarioController.login(cpf, nome);
 
             if (login) {
@@ -214,7 +206,6 @@ public class TelaIdentificacao extends JFrame {
                             "Login efetuado com sucesso! Bem-vindo(a), " + usuario.getNome() + ".",
                             "Sucesso", JOptionPane.INFORMATION_MESSAGE);
 
-                    // Redirecionar para a tela apropriada
                     if (usuario.getFuncao().equals("Administrador")) {
                         JFrame cadastroproduto = new CadastroProdutos();
                         cadastroproduto.setVisible(true);
@@ -253,7 +244,6 @@ public class TelaIdentificacao extends JFrame {
         }
     }
 
-    // -------------------- ABRIR TELA DE CADASTRO (Com Tratamento de Exceção) --------------------
     private void abrirTelaCadastro() {
         try {
             TelaCadastroUsuario cadastrousuario = new TelaCadastroUsuario();

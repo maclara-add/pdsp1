@@ -1,14 +1,14 @@
 package Controller;
 
-import DAO.Conexao;
-import DAO.ProdutoDAO;
+import Model.Conexao;
+import Model.ProdutoDAO;
 import Model.Produtos;
 import java.sql.*;
 import java.util.ArrayList;
 
 public class ProdutoController {
 
-	//tratamento de exceção
+
     public static boolean adicionarProduto(Produtos p) {
         try (Connection conn = Conexao.getConnection()) {
             ProdutoDAO dao = new ProdutoDAO(conn);
@@ -19,7 +19,7 @@ public class ProdutoController {
             return false;
         }
     }
-  //tratamento de exceção
+
     public static Produtos buscarProduto(String id) {
         try (Connection conn = Conexao.getConnection()) {
             ProdutoDAO dao = new ProdutoDAO(conn);
@@ -29,7 +29,7 @@ public class ProdutoController {
             return null;
         }
     }
-  //tratamento de exceção
+  //
     public static ArrayList<Produtos> listarProdutos() {
         ArrayList<Produtos> lista = new ArrayList<>();
         try (Connection conn = Conexao.getConnection()) {

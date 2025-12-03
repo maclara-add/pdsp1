@@ -1,7 +1,7 @@
 package Controller;
 
-import DAO.UsuarioDAO;
 import Model.Usuario;
+import Model.UsuarioDAO;
 
 import javax.swing.*;
 
@@ -46,7 +46,7 @@ public class UsuarioController {
         }
     }
 
-  //tratamento de exceção
+  
     public Usuario buscarUsuario(String cpf) {
         try {
             return usuarioDAO.buscarPorCpf(cpf);

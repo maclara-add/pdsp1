@@ -32,7 +32,6 @@ public class CadastroProdutos extends JFrame {
         contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
         setContentPane(contentPane);
 
-        // MigLayout do ContentPane: Menu, Tabela, Ações (OK, Grow Vertical e Horizontal)
         contentPane.setLayout(new MigLayout(
                 "fill, insets 10",
                 "[grow, fill]",
@@ -44,7 +43,6 @@ public class CadastroProdutos extends JFrame {
         JMenu mnMenu = new JMenu("Menu");
         JMenuItem mntmVoltar = new JMenuItem("Voltar");
         mntmVoltar.addActionListener(e -> {
-            // Assumindo que TelaIdentificacao existe e lida com o controle de fluxo.
             TelaIdentificacao identificacao = new TelaIdentificacao(); 
             identificacao.setVisible(true);
             CadastroProdutos.this.dispose();
@@ -53,7 +51,6 @@ public class CadastroProdutos extends JFrame {
         menuBar.add(mnMenu);
         setJMenuBar(menuBar);
 
-        // -------------------- TABELA DE PRODUTOS --------------------
         String[] colunas = { "Produto", "Preço", "Categoria", "ID", "Estoque" };
         modeloTabela = new DefaultTableModel(colunas, 0) {
             @Override
@@ -66,20 +63,16 @@ public class CadastroProdutos extends JFrame {
         carregarProdutosNaTabela();
 
         JScrollPane scrollPane = new JScrollPane(tabelaprodutos);
-        // Ocupa a célula 0 1 e tem GROW/PUSH para preencher o espaço vertical
         contentPane.add(scrollPane, "cell 0 1, grow, push");
 
-        // -------------------- PAINEL DE AÇÕES (AJUSTADO PARA RESPONSIVIDADE) --------------------
         JPanel panel = new JPanel();
         panel.setLayout(new MigLayout(
-                "fill, insets 5, wrap 6", // 6 colunas, quebra de linha (wrap) a cada 6
-                // 5 Colunas [grow, fill] para os campos de texto + 1 Coluna [150, fill] para os botões
+                "fill, insets 5, wrap 6", 
                 "[grow, fill][grow, fill][grow, fill][grow, fill][grow, fill]10[150, fill]",
                 "[]5[]5[]5[]"
         ));
         contentPane.add(panel, "cell 0 2, growx");
 
-        // ---- Labels (Linha 0) ----
         String[] labels = { "Nome", "Preço", "Categoria", "ID", "Estoque" };
         for (int i = 0; i < labels.length; i++) {
             JLabel lbl = new JLabel(labels[i]);
@@ -87,7 +80,6 @@ public class CadastroProdutos extends JFrame {
             panel.add(lbl, "cell " + i + " 0, align center");
         }
 
-        // -------------------- CAMPOS ADICIONAR (Linha 1) --------------------
         textNome1 = new JTextField();
         panel.add(textNome1, "cell 0 1, h 30");
         textPreco1 = new JTextField();
@@ -104,7 +96,6 @@ public class CadastroProdutos extends JFrame {
         btnAdicionar.addActionListener(e -> adicionarProduto());
         panel.add(btnAdicionar, "cell 5 1, growx, h 30");
 
-        // -------------------- CAMPOS EDITAR (Linha 2) --------------------
         textNome2 = new JTextField();
         panel.add(textNome2, "cell 0 2, h 30");
         textPreco2 = new JTextField();
@@ -121,33 +112,27 @@ public class CadastroProdutos extends JFrame {
         btnEditar.addActionListener(e -> editarProduto());
         panel.add(btnEditar, "cell 5 2, growx, h 30");
 
-        // -------------------- BOTÃO REMOVER (Linha 3) --------------------
         JButton btnRemover = new JButton("Remover Produto Selecionado");
         btnRemover.setFont(new Font("Tahoma", Font.PLAIN, 15));
         btnRemover.addActionListener(e -> removerProduto());
-        // Ocupa 6 colunas (span 6)
         panel.add(btnRemover, "cell 0 3 6 1, growx, align center");
-
-        // -------------------- LISTENER PARA PREENCHER CAMPOS DE EDIÇÃO --------------------
+        
         tabelaprodutos.getSelectionModel().addListSelectionListener(e -> {
             int linha = tabelaprodutos.getSelectedRow();
             if (linha >= 0 && !e.getValueIsAdjusting()) {
                 textNome2.setText((String) modeloTabela.getValueAt(linha, 0));
-                // O preço e a ID são String, o estoque é int/Integer
                 textPreco2.setText((String) modeloTabela.getValueAt(linha, 1)); 
                 textCategoria2.setText((String) modeloTabela.getValueAt(linha, 2));
                 textID2.setText((String) modeloTabela.getValueAt(linha, 3));
-                // Convertendo para String, garantindo que o valor seja exibido.
                 textEstoque2.setText(String.valueOf(modeloTabela.getValueAt(linha, 4))); 
             }
         });
     }
 
-    // -------------------- CARREGAR TABELA (Com Tratamento de Exceção) --------------------
     private void carregarProdutosNaTabela() {
         modeloTabela.setRowCount(0);
         try {
-            ArrayList<Produtos> lista = ProdutoController.listarProdutos(); // Ponto de I/O, pode falhar!
+            ArrayList<Produtos> lista = ProdutoController.listarProdutos();
             if (lista != null) {
                 for (Produtos p : lista) {
                     modeloTabela.addRow(new Object[] { p.getNome(), p.getPreco(), p.getCategoria(), p.getId(),
@@ -162,7 +147,6 @@ public class CadastroProdutos extends JFrame {
         }
     }
 
-    // -------------------- ADICIONAR (Com Tratamento de Exceção) --------------------
     private void adicionarProduto() {
         String nome = textNome1.getText().trim();
         String preco = textPreco1.getText().trim();
@@ -177,12 +161,7 @@ public class CadastroProdutos extends JFrame {
         }
 
         try {
-            // Validação de formato (NumberFormatException)
             int estoque = Integer.parseInt(estoqueStr);
-            // Simulação de validação de preço (se for String, o Controller/Model fará a conversão final)
-            // Se o preço não for um número válido, o try-catch genérico abaixo deverá capturar.
-            // Para maior robustez, você pode adicionar: 
-            // Double.parseDouble(preco.replace(",", ".")); 
 
             if (estoque < 0) {
                 JOptionPane.showMessageDialog(this, "O estoque não pode ser negativo!", "Erro de Negócio",
@@ -191,9 +170,7 @@ public class CadastroProdutos extends JFrame {
             }
 
             Produtos p = new Produtos(nome, preco, categoria, id, estoque);
-            ProdutoController.adicionarProduto(p); // Ponto de exceção potencial (I/O, dados)
-
-            // Atualiza a tabela e limpa campos
+            ProdutoController.adicionarProduto(p);
             carregarProdutosNaTabela();
             JOptionPane.showMessageDialog(this, "Produto adicionado com sucesso!", "Sucesso",
                     JOptionPane.INFORMATION_MESSAGE);
@@ -214,7 +191,6 @@ public class CadastroProdutos extends JFrame {
         }
     }
 
-    // -------------------- EDITAR (Com Tratamento de Exceção) --------------------
     private void editarProduto() {
         int linha = tabelaprodutos.getSelectedRow();
         if (linha < 0) {
@@ -237,10 +213,7 @@ public class CadastroProdutos extends JFrame {
         }
 
         try {
-            // Validação de formato (NumberFormatException)
-            int novoEstoque = Integer.parseInt(novoEstoqueStr);
-            // Simulação de validação de preço
-            // Double.parseDouble(novoPreco.replace(",", ".")); 
+            int novoEstoque = Integer.parseInt(novoEstoqueStr); 
             
             if (novoEstoque < 0) {
                 JOptionPane.showMessageDialog(this, "O estoque não pode ser negativo!", "Erro de Negócio",
@@ -250,9 +223,8 @@ public class CadastroProdutos extends JFrame {
 
             String idAntigo = (String) modeloTabela.getValueAt(linha, 3);
             Produtos novoProduto = new Produtos(novoNome, novoPreco, novaCategoria, novoID, novoEstoque);
-            ProdutoController.editarProduto(idAntigo, novoProduto); // Ponto de exceção potencial (I/O, dados)
+            ProdutoController.editarProduto(idAntigo, novoProduto);
 
-            // Atualiza a linha na JTable
             modeloTabela.setValueAt(novoNome, linha, 0);
             modeloTabela.setValueAt(novoPreco, linha, 1);
             modeloTabela.setValueAt(novaCategoria, linha, 2);
@@ -272,7 +244,6 @@ public class CadastroProdutos extends JFrame {
         }
     }
 
-    // -------------------- REMOVER (Com Tratamento de Exceção) --------------------
     private void removerProduto() {
         int linha = tabelaprodutos.getSelectedRow();
         if (linha < 0) {
@@ -286,7 +257,7 @@ public class CadastroProdutos extends JFrame {
             int confirm = JOptionPane.showConfirmDialog(this, "Remover o produto ID: " + id + "?", "Confirmação",
                     JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                ProdutoController.removerProduto(id); // Ponto de exceção potencial (I/O, dados)
+                ProdutoController.removerProduto(id); 
                 modeloTabela.removeRow(linha);
                 JOptionPane.showMessageDialog(this, "Produto removido com sucesso!", "Sucesso",
                         JOptionPane.INFORMATION_MESSAGE);
